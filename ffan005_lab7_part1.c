@@ -12,6 +12,7 @@
 #include <avr/interrupt.h>
 #ifdef _SIMULATE_
 #include "simAVRHeader.h"
+#include "io.h"
 #endif
 enum States {Start, Initial, Press, Increment, Decrement, Reset, temp1, temp2} state;
 volatile unsigned char TimerFlag = 0;
@@ -50,6 +51,38 @@ _avr_timer_cntcurr = _avr_timer_M;
 }
 
 void Tick(){
+//        right here, I chose Display over write data, because when I write data, it keeps writing numbers onto the LCD screen, 
+//        but when I use display, it only display once (at least shown as only one digit)
+        if (PORTB == 0x00) {
+                LCD_DisplayString(1, "0");
+        }
+        if (PORTB == 0x01) {
+                LCD_DisplayString(1, "1");
+        }
+        if (PORTB == 0x02) {
+                LCD_DisplayString(1, "2");
+        }
+        if (PORTB == 0x03) {
+                LCD_DisplayString(1, "3");
+        }
+        if (PORTB == 0x04) {
+                LCD_DisplayString(1, "4");
+        }
+        if (PORTB == 0x05) {
+                LCD_DisplayString(1, "5");
+        }
+        if (PORTB == 0x06) {
+                LCD_DisplayString(1, "6");
+        }
+        if (PORTB == 0x07) {
+                LCD_DisplayString(1, "7");
+        }
+        if (PORTB == 0x08) {
+                LCD_DisplayString(1, "8");
+        }
+        if (PORTB == 0x09) {
+                LCD_DisplayString(1, "9");
+        }
 
   unsigned char temp = ~PINA & 0x03;
   switch(state){
@@ -148,11 +181,13 @@ void Tick(){
 
 int main(void) {
     DDRA = 0x00; PORTA = 0xFF;
-    DDRB = 0xFF;
-    PORTB = 0x00;
+    DDRB = 0xFF; PORTB = 0x00;
+    DDRC = 0xFF; PORTC = 0x00;
+    DDRD = 0xFF; PORTD = 0x00;
     TimerSet(50);
     TimerOn();
 //    unsigned char tmpB = 0x00;
+    LCD_init();
     while (1) {
 //      tmpB = ~tmpB;
 //      PORTB = tmpB;
@@ -161,3 +196,4 @@ int main(void) {
         TimerFlag = 0;
     }
 }
+
