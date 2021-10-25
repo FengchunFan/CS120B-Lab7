@@ -14,7 +14,7 @@
 #include "simAVRHeader.h"
 #include "io.h"
 #endif
-enum States {Start, Initial, Press, Increment, Decrement, Reset, temp1, temp2} state;
+enum States {Start, Initial, Press, Increment, Decrement, Reset, temp1, temp2, Press1, Add, Sub} state;
 volatile unsigned char TimerFlag = 0;
 unsigned long _avr_timer_M = 1;
 unsigned long _avr_timer_cntcurr = 0;
@@ -131,9 +131,33 @@ void Tick(){
       if(temp == 0x03){
         state = Reset;
       } else {
-        state = Press;
+        state = Press1;
       }
      break;
+        
+      case Press1:
+      if(temp == 0x01){
+        state = Add;
+      } else if(temp == 0x02){
+        state = Sub;
+      }
+      break;
+
+    case Add:
+        if(temp == 0x01){
+        state = Add;
+        }else{
+        state = Press1;
+        }
+        break;
+
+    case Sub:
+        if(temp == 0x02){
+        state = Sub;
+        }else{
+        state = Press1;
+        }
+        break;
 
     default:
       state = Start;
@@ -172,7 +196,22 @@ void Tick(){
     case Reset:
       PORTB = 0x00;
       break;
+                  
+    case Press1:
+     break;
 
+    case Add:
+      if(PORTB < 0x09){
+        PORTB = PORTB + 1;
+      }
+      break;
+
+    case Sub:
+      if(PORTB > 0x00){
+        PORTB = PORTB - 1;
+      }
+     break;
+                  
     default:
       PORTB = 0x07;
       break;
